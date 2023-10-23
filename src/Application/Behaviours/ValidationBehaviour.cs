@@ -16,11 +16,11 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
         {
             return await next();
         }
-
+        
         var context = new ValidationContext<TRequest>(request);
-
-        var errors = _validators
-            .Select(x => x.Validate(context))
+        
+        var validationResults = await Task.WhenAll(_validators.Select(x => x.ValidateAsync(context, cancellationToken)));
+        var errors = validationResults
             .SelectMany(x => x.Errors)
             .Where(x => x != null)
             .GroupBy(
@@ -37,7 +37,7 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
         {
             throw new ValidationException(errors);
         }
-
+        
         return await next();
     }
 }
