@@ -12,9 +12,9 @@ public class TeamRepository : ITeamRepository
         return await Task.Run(() => Teams);
     }
 
-    public async Task<Team> FindAsync(Guid id)
+    public async Task<Team?> FindAsync(Guid id)
     {
-        return await Task.Run(() => Teams.Single(x => x.Id == id));
+        return await Task.Run(() => Teams.SingleOrDefault(x => x.Id == id));
     }
 
     public Team Create(Team team)

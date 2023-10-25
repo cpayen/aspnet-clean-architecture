@@ -1,4 +1,5 @@
 using Application.Contracts;
+using Application.Exceptions;
 using Domain.Entities;
 using MediatR;
 
@@ -25,6 +26,8 @@ public class FindTeamQueryHandler : IRequestHandler<FindTeamQuery, Team>
     
     public async Task<Team> Handle(FindTeamQuery request, CancellationToken cancellationToken)
     {
-        return await Task.Run(() => _teamRepository.FindAsync(request.Id), cancellationToken);
+        var team = await _teamRepository.FindAsync(request.Id) ?? 
+                   throw new NotFoundException("Oups, not found");
+        return team;
     }
 }
