@@ -8,15 +8,15 @@ public class GetAllTeamsQuery : IRequest<IEnumerable<Team>> {}
 
 public class GetAllTeamsQueryHandler : IRequestHandler<GetAllTeamsQuery, IEnumerable<Team>>
 {
-    private readonly ITeamRepository _teamRepository;
+    private readonly IUnitOfWork _uow;
 
-    public GetAllTeamsQueryHandler(ITeamRepository teamRepository)
+    public GetAllTeamsQueryHandler(IUnitOfWork uow)
     {
-        _teamRepository = teamRepository;
+        _uow = uow;
     }
     
     public async Task<IEnumerable<Team>> Handle(GetAllTeamsQuery request, CancellationToken cancellationToken)
     {
-        return await Task.Run(() => _teamRepository.GetAllAsync(), cancellationToken);
+        return await _uow.TeamRepository.GetAllAsync();
     }
 }

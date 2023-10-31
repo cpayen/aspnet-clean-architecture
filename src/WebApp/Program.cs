@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Infrastructure.Database.Configuration;
 using WebApp.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,8 +12,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var dbConfig = 
+    builder.Configuration.GetSection("DatabaseConfiguration").Get<DatabaseConfiguration>()
+    ?? throw new Exception("Invalid configuration");
+
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(dbConfig);
 
 var app = builder.Build();
 

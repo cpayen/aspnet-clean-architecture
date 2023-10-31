@@ -17,17 +17,18 @@ public class FindTeamQuery : IRequest<Team>
 
 public class FindTeamQueryHandler : IRequestHandler<FindTeamQuery, Team>
 {
-    private readonly ITeamRepository _teamRepository;
+    private readonly IUnitOfWork _uow;
 
-    public FindTeamQueryHandler(ITeamRepository teamRepository)
+    public FindTeamQueryHandler(IUnitOfWork uow)
     {
-        _teamRepository = teamRepository;
+        _uow = uow;
     }
     
     public async Task<Team> Handle(FindTeamQuery request, CancellationToken cancellationToken)
     {
-        var team = await _teamRepository.FindAsync(request.Id) ?? 
-                   throw new NotFoundException("Oups, not found");
+        var team = await _uow.TeamRepository.GetAsync(request.Id) ?? 
+                   throw new NotFoundException($"Team with ID {request.Id} not found.");
+        
         return team;
     }
 }

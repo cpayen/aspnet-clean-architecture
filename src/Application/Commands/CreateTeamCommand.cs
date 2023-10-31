@@ -17,21 +17,23 @@ public class CreateTeamCommand : IRequest<Team>
 
 public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Team>
 {
-    private readonly ITeamRepository _teamRepository;
+    private readonly IUnitOfWork _uow;
 
-    public CreateTeamCommandHandler(ITeamRepository teamRepository)
+    public CreateTeamCommandHandler(IUnitOfWork uow)
     {
-        _teamRepository = teamRepository;
+        _uow = uow;
     }
 
     public async Task<Team> Handle(CreateTeamCommand request, CancellationToken cancellationToken)
     {
-        var team = _teamRepository.Create(new Team()
+        var team = await _uow.TeamRepository.CreateAsync(new Team()
         {
-            Id = Guid.NewGuid(),
             Name = request.Name
         });
-        return await Task.Run(() => team, cancellationToken);
+        
+        await _uow.SaveAsync();
+        
+        return team;
     }
 }
 

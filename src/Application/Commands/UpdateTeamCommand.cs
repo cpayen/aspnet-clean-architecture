@@ -19,21 +19,24 @@ public class UpdateTeamCommand : IRequest<Team>
 
 public class UpdateTeamCommandHandler : IRequestHandler<UpdateTeamCommand, Team>
 {
-    private readonly ITeamRepository _teamRepository;
+    private readonly IUnitOfWork _uow;
 
-    public UpdateTeamCommandHandler(ITeamRepository teamRepository)
+    public UpdateTeamCommandHandler(IUnitOfWork uow)
     {
-        _teamRepository = teamRepository;
+        _uow = uow;
     }
     
     public async Task<Team> Handle(UpdateTeamCommand request, CancellationToken cancellationToken)
     {
-        var team = _teamRepository.Update(new Team()
+        var team = await _uow.TeamRepository.UpdateAsync(new Team()
         {
             Id = request.Id,
             Name = request.Name
         });
-        return await Task.Run(() => team, cancellationToken);
+        
+        await _uow.SaveAsync();
+        
+        return team;
     }
 }
 

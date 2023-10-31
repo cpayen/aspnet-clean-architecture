@@ -5,8 +5,8 @@ namespace Application.Contracts;
 public interface ITeamRepository
 {
     Task<IEnumerable<Team>> GetAllAsync();
-    Task<Team?> FindAsync(Guid id);
-    Team Create(Team team);
-    Team Update(Team team);
-    Team Delete(Guid id);
+    Task<Team?> GetAsync(Guid id);
+    Task<Team> CreateAsync(Team team);
+    Task<Team> UpdateAsync(Team team);
+    Task DeleteAsync(Guid id);
 }

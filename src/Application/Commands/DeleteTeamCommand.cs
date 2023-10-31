@@ -1,5 +1,4 @@
 using Application.Contracts;
-using Domain.Entities;
 using FluentValidation;
 using MediatR;
 
@@ -17,17 +16,17 @@ public class DeleteTeamCommand : IRequest
 
 public class DeleteTeamCommandHandler : IRequestHandler<DeleteTeamCommand>
 {
-    private readonly ITeamRepository _teamRepository;
+    private readonly IUnitOfWork _uow;
 
-    public DeleteTeamCommandHandler(ITeamRepository teamRepository)
+    public DeleteTeamCommandHandler(IUnitOfWork uow)
     {
-        _teamRepository = teamRepository;
+        _uow = uow;
     }
     
     public async Task Handle(DeleteTeamCommand request, CancellationToken cancellationToken)
     {
-        var team = _teamRepository.Delete(request.Id);
-        await Task.Run(() => team, cancellationToken);
+        await _uow.TeamRepository.DeleteAsync(request.Id);
+        await _uow.SaveAsync();
     }
 }
 

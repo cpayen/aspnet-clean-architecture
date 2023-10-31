@@ -1,0 +1,15 @@
+version: '3'
+volumes:
+  data:
+services:
+  db:
+    image: mariadb:11.1
+    environment:
+      MYSQL_ROOT_PASSWORD: Pa$$w0rd!
+      MYSQL_DATABASE: clean
+      MYSQL_USER: clean
+      MYSQL_PASSWORD: clean
+    volumes:
+      - data:/var/lib/mysql
+    ports:
+      - "3306:3306"
