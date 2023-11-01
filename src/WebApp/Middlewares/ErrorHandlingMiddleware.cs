@@ -1,6 +1,6 @@
-using System.Net;
 using System.Text.Json;
 using Application.Exceptions;
+using ApplicationException = Application.Exceptions.ApplicationException;
 
 namespace WebApp.Middlewares;
 
@@ -12,7 +12,7 @@ public class ErrorHandlingMiddleware
     {
         _next = next;
     }
-    
+
     public async Task Invoke(HttpContext context)
     {
         try
@@ -30,29 +30,42 @@ public class ErrorHandlingMiddleware
 
     private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        // 500 if unexpected
-        var code = HttpStatusCode.InternalServerError;
-        var title = "Server error";
-
-        switch (exception)
+        var statusCode = GetStatusCode(exception);
+        var response = new
         {
-            // 404 not found
-            case NotFoundException:
-                code = HttpStatusCode.NotFound;
-                title = "Not found";
-                break;
-            
-            // 400 bad request
-            case ValidationException:
-                code = HttpStatusCode.BadRequest;
-                title = "Bad request";
-                break;
-        }
-
-        var result = JsonSerializer.Serialize(new { title, status = (int)code, error = exception.Message });
+            title = GetTitle(exception),
+            status = statusCode,
+            detail = exception.Message,
+            errors = GetErrors(exception)
+        };
+        
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)code;
+        context.Response.StatusCode = statusCode;
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+    }
 
-        await context.Response.WriteAsync(result);
+    private static int GetStatusCode(Exception exception) =>
+        exception switch
+        {
+            NotFoundException => StatusCodes.Status404NotFound,
+            BadRequestException => StatusCodes.Status400BadRequest,
+            ValidationException => StatusCodes.Status400BadRequest,
+            _ => StatusCodes.Status500InternalServerError
+        };
+
+    private static string GetTitle(Exception exception) =>
+        exception switch
+        {
+            ApplicationException applicationException => applicationException.Title,
+            _ => "Server Error"
+        };
+    
+    private static IReadOnlyDictionary<string, string[]>? GetErrors(Exception exception)
+    {
+        if (exception is ValidationException validationException)
+        {
+            return validationException.ErrorsDictionary;
+        }
+        return null;
     }
 }

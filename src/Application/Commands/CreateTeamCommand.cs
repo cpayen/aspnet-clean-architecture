@@ -26,14 +26,15 @@ public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Team>
 
     public async Task<Team> Handle(CreateTeamCommand request, CancellationToken cancellationToken)
     {
-        var team = await _uow.TeamRepository.CreateAsync(new Team()
+        var newId = await _uow.TeamRepository.CreateAsync(new Team()
         {
             Name = request.Name
         });
         
         await _uow.SaveAsync();
-        
-        return team;
+
+        var team = await _uow.TeamRepository.GetAsync(newId);
+        return team!;
     }
 }
 

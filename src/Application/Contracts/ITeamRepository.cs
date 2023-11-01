@@ -6,7 +6,7 @@ public interface ITeamRepository
 {
     Task<IEnumerable<Team>> GetAllAsync();
     Task<Team?> GetAsync(Guid id);
-    Task<Team> CreateAsync(Team team);
-    Task<Team> UpdateAsync(Team team);
+    Task<Guid> CreateAsync(Team team);
+    Task UpdateAsync(Team team);
     Task DeleteAsync(Guid id);
 }

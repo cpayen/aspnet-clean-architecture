@@ -18,6 +18,12 @@ public class UnitOfWork : IUnitOfWork
         get { return _teamRepository ??= new TeamRepository(_context); }
     }
     
+    private IPlayerRepository? _playerRepository;
+    public IPlayerRepository PlayerRepository
+    {
+        get { return _playerRepository ??= new PlayerRepository(_context); }
+    }
+    
     public async Task SaveAsync()
     {
         await _context.SaveChangesAsync();

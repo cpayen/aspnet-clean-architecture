@@ -1,4 +1,5 @@
 using Application.Contracts;
+using Application.Exceptions;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
@@ -28,12 +29,13 @@ public class UpdateTeamCommandHandler : IRequestHandler<UpdateTeamCommand, Team>
     
     public async Task<Team> Handle(UpdateTeamCommand request, CancellationToken cancellationToken)
     {
-        var team = await _uow.TeamRepository.UpdateAsync(new Team()
-        {
-            Id = request.Id,
-            Name = request.Name
-        });
+        var team = 
+            await _uow.TeamRepository.GetAsync(request.Id) 
+            ?? throw new NotFoundException($"Team with ID {request.Id} not found.");
+
+        team.Name = request.Name;
         
+        await _uow.TeamRepository.UpdateAsync(team);
         await _uow.SaveAsync();
         
         return team;

@@ -22,15 +22,15 @@ public class TeamsController : Controller
     {
         var query = new GetAllTeamsQuery();
         var result = await _mediator.Send(query);
-        return Ok(result);
+        return Ok(result.Select(TeamDto.FromDomainEntity));
     }
     
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> Find(Guid id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        var query = new FindTeamQuery(id);
+        var query = new GetTeamQuery(id);
         var result = await _mediator.Send(query);
-        return Ok(result);
+        return Ok(TeamDto.FromDomainEntity(result));
     }
     
     [HttpPost]
@@ -38,7 +38,7 @@ public class TeamsController : Controller
     {
         var command = new CreateTeamCommand(dto.Name);
         var result = await _mediator.Send(command);
-        return Created(result.Id.ToString(), result);
+        return Created(result.Id.ToString(), TeamDto.FromDomainEntity(result));
     }
     
     [HttpPut("{id:guid}")]
@@ -46,7 +46,7 @@ public class TeamsController : Controller
     {
         var command = new UpdateTeamCommand(id, dto.Name);
         var result = await _mediator.Send(command);
-        return Ok(result);
+        return Ok(TeamDto.FromDomainEntity(result));
     }
     
     [HttpDelete("{id:guid}")]
