@@ -5,9 +5,8 @@
 Playing with clean architecture in ASP.Net web API, trying to keep it simple.
 
 - Hexagonal architecture
-- CQRS
-- Anti-corruption layers
-- Other cool things
+- CQRS, MediatR & Fluent validation
+- MariaDB persistence, Repository & Unit of work patterns
 
 ## Infrastructure
 
@@ -26,11 +25,10 @@ dotnet ef migrations add MigrationName -o Database/Migrations
 dotnet ef database update
 ```
 
-## TODO
+## Enhancements
 
 - Unit tests
 - Integration tests
-- Persistence (Docker): MongoDB ? MySQL ? EF Core ? Unit of work pattern ?
 - Secure API ? With API key ?
-- Handle configuration (Option Pattern)
 - Share things in Nugget packages ? (middlewares, mediator behaviours...)
+- Add documentation
